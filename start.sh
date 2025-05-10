@@ -36,6 +36,7 @@ echo -e "${YELLOW} -------------------------------------------------------------
 
 source ${SCRIPTS_DIR}/getos.sh
 SCRIPTS_OS_DIR=${SCRIPTS_DIR}/${OS}
+IP_ADDR=`ip a s |grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.17.0.1|awk '{print $2}'|tr -d "addr:"|head -1|awk -F '/' '{print $1}'`
 
 if [ "${DEBUG_MODE}" == "true" ]; then
   bash ${SCRIPTS_DIR}/color.sh blue "当前系统：${OS}"
@@ -43,6 +44,7 @@ if [ "${DEBUG_MODE}" == "true" ]; then
   bash ${SCRIPTS_DIR}/color.sh blue "当前脚本路径：${SCRIPTS_DIR}"
   bash ${SCRIPTS_DIR}/color.sh blue "当前系统脚本路径：${SCRIPTS_OS_DIR}"
   bash ${SCRIPTS_DIR}/color.sh blue "当前yum目录：${YUM_DIR}"
+  bash ${SCRIPTS_DIR}/color.sh blue "当前IP地址：${IP_ADDR}"
 fi
 
 
@@ -114,7 +116,7 @@ while getopts "mos:uh" opt; do
         ( ${build_cmd} )
         ;;
       docker)
-        build_cmd="bash ${SCRIPTS_OS_DIR}/install_docker.sh ${YUM_DIR}/V10/docker/"
+        build_cmd="bash ${SCRIPTS_OS_DIR}/start_docker.sh ${YUM_DIR}"
         echo ${build_cmd}
         ( ${build_cmd} )
         ;;

@@ -16,6 +16,10 @@ if [ -z "${SCRIPTS_DIR}" ]; then
   export SCRIPTS_DIR=${MAIN_DIR}/scripts
 fi
 
+if [ -z "${YUM_DIR}" ]; then
+  export YUM_DIR=${MAIN_DIR}/yum
+fi
+
 ########################################################################
 YELLOW='\033[0;33m'
 NC='\033[0m'
@@ -38,6 +42,7 @@ if [ "${DEBUG_MODE}" == "true" ]; then
   bash ${SCRIPTS_DIR}/color.sh blue "当前运行目录：${MAIN_DIR}"
   bash ${SCRIPTS_DIR}/color.sh blue "当前脚本路径：${SCRIPTS_DIR}"
   bash ${SCRIPTS_DIR}/color.sh blue "当前系统脚本路径：${SCRIPTS_OS_DIR}"
+  bash ${SCRIPTS_DIR}/color.sh blue "当前yum目录：${YUM_DIR}"
 fi
 
 
@@ -63,7 +68,7 @@ while getopts "mos:uh" opt; do
   case $opt in
   m)
     while : ;do
-      source ${SCRIPTS_DIR}/color.sh green "请选择(1: 环境检查, 2: 推送镜像, 3: 运行实例, 任意键: 退出):"
+      source ${SCRIPTS_DIR}/color.sh green "请选择(1: 环境检查, 2: 安装Docker, 3: 运行实例, 任意键: 退出):"
 
       read WANT_TO_DO
 
@@ -76,12 +81,10 @@ while getopts "mos:uh" opt; do
           ;;
 
           #########################################################################
-          2) # 推送镜像
-            tag_cmd="docker tag ${SLINES_IMAGE_NAME}:${TAGET} ${SLINES_IMAGE_REGISTRY_NAME}:${TAGET}"
-            echo ${tag_cmd}
-            push_cmd="docker push ${SLINES_IMAGE_REGISTRY_NAME}:${TAGET}"
-            echo ${push_cmd}
-            ( ${tag_cmd} && ${push_cmd} )
+          2) # 安装Docker
+            build_cmd="bash start.sh -s docker"
+            echo ${build_cmd}
+            ( ${build_cmd} )
           ;;
 
           3) # 运行实例
@@ -107,6 +110,11 @@ while getopts "mos:uh" opt; do
     case "$action" in
       check)
         build_cmd="bash ${SCRIPTS_OS_DIR}/check_system.sh"
+        echo ${build_cmd}
+        ( ${build_cmd} )
+        ;;
+      docker)
+        build_cmd="bash ${SCRIPTS_OS_DIR}/install_docker.sh ${YUM_DIR}/V10/docker/"
         echo ${build_cmd}
         ( ${build_cmd} )
         ;;
